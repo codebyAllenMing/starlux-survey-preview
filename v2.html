@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STARLUX App 使用者問卷 — v2</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --border: #e3e6eb;
+    --text: #1a1d21;
+    --muted: #6b7280;
+    --accent: #1e40af;
+    --accent-soft: #eef2ff;
+    --intent-bg: #fafafa;
+    --intent-border: #e5e7eb;
+    --warn: #b45309;
+    --warn-bg: #fef3c7;
+    --skip-bg: #fee2e2;
+    --skip-text: #991b1b;
+    --new: #047857;
+    --new-bg: #d1fae5;
+    --interview-bg: #fff7ed;
+    --interview-border: #fdba74;
+    --interview-text: #9a3412;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    font-family: "Noto Sans TC", "PingFang TC", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 15px;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+  }
+  .topbar .label { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .topbar .toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--muted); cursor: pointer; user-select: none;
+  }
+  .topbar input[type="checkbox"] { accent-color: var(--accent); }
+  .container { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  .intro {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px; margin-bottom: 28px;
+  }
+  .intro h1 { margin: 0 0 8px; font-size: 22px; font-weight: 700; }
+  .intro .meta { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .intro ul { margin: 12px 0 0; padding-left: 20px; color: var(--muted); font-size: 14px; }
+  .intro ul li { margin-bottom: 4px; }
+
+  .section-label {
+    margin: 36px 0 16px;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase;
+  }
+
+  .qcard {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 28px; margin-bottom: 16px;
+    position: relative;
+  }
+  .qhead {
+    display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+  .qnum {
+    font-size: 12px; font-weight: 700; color: var(--accent);
+    background: var(--accent-soft); padding: 2px 8px; border-radius: 4px;
+  }
+  .qtitle { font-size: 16px; font-weight: 600; margin: 0; }
+  .qhint { font-size: 13px; color: var(--muted); margin: 4px 0 14px; }
+
+  .scenario {
+    background: #f3f6fa; border-left: 3px solid var(--accent);
+    padding: 10px 14px; border-radius: 0 6px 6px 0;
+    margin: 12px 0; font-size: 14px; color: #374151;
+  }
+  .scenario .label {
+    font-size: 11px; color: var(--accent); font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    display: block; margin-bottom: 4px;
+  }
+
+  .opts { margin-top: 10px; }
+  .opt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+    margin-bottom: 6px; cursor: pointer; transition: all 0.15s ease;
+  }
+  .opt:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .opt input { margin-top: 4px; accent-color: var(--accent); }
+  .opt span { font-size: 14px; }
+  .opt .skiphint {
+    color: var(--skip-text); background: var(--skip-bg);
+    padding: 2px 6px; border-radius: 4px;
+    font-size: 11px; margin-left: auto; white-space: nowrap;
+  }
+
+  .textinput, .textarea {
+    width: 100%; border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 12px; font-family: inherit; font-size: 14px;
+    margin-top: 8px; background: #fafbfc; color: var(--text);
+  }
+  .textarea { min-height: 80px; resize: vertical; }
+  .textinput:focus, .textarea:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+
+  .matrix { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  .matrix th, .matrix td {
+    border-bottom: 1px solid var(--border); padding: 10px 8px; text-align: center;
+  }
+  .matrix th { background: #f9fafb; color: var(--muted); font-weight: 600; font-size: 12px; }
+  .matrix td:first-child { text-align: left; font-size: 13px; }
+  .matrix input { accent-color: var(--accent); cursor: pointer; }
+
+  .badge-condition {
+    display: inline-block;
+    background: var(--warn-bg); color: var(--warn);
+    font-size: 11px; padding: 3px 8px; border-radius: 4px;
+    font-weight: 600; margin-bottom: 8px;
+  }
+  .badge-new {
+    display: inline-block;
+    background: var(--new-bg); color: var(--new);
+    font-size: 11px; padding: 2px 7px; border-radius: 4px;
+    font-weight: 700; margin-left: 6px; letter-spacing: 0.05em;
+  }
+
+  .intent {
+    margin-top: 14px; background: var(--intent-bg);
+    border: 1px dashed var(--intent-border); border-radius: 8px;
+    padding: 12px 14px; font-size: 12.5px; color: var(--muted);
+  }
+  .intent .lbl {
+    font-weight: 700; color: #4b5563; font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-right: 6px;
+  }
+  body.clean .intent { display: none; }
+  body.clean .badge-condition { display: none; }
+  body.clean .badge-new { display: none; }
+  body.clean .skiphint { display: none; }
+
+  /* Interview invitation block */
+  .interview {
+    background: var(--interview-bg); border: 1px solid var(--interview-border);
+    border-radius: 12px; padding: 22px 26px; margin: 24px 0;
+    color: var(--interview-text);
+  }
+  .interview h3 { margin: 0 0 6px; font-size: 16px; color: var(--interview-text); }
+  .interview p { margin: 6px 0; font-size: 14px; }
+  .interview .textinput { background: #fff; color: var(--text); margin-top: 10px; }
+
+  /* Star rating */
+  .stars {
+    display: flex; gap: 6px; margin: 8px 0 4px;
+  }
+  .stars label {
+    flex: 0 0 auto; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 14px; font-size: 14px; font-weight: 600;
+    color: var(--muted); transition: all 0.15s;
+    user-select: none;
+  }
+  .stars label:hover { border-color: var(--accent); color: var(--accent); }
+  .stars input { display: none; }
+  .stars input:checked + span { color: var(--accent); }
+
+  .rating-row { margin-bottom: 18px; }
+  .rating-row .rl {
+    font-weight: 600; font-size: 14px; display: block; margin-bottom: 4px;
+  }
+  .rating-row .rh {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted); margin-top: 4px;
+    max-width: 360px;
+  }
+
+  .end {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; margin-top: 24px;
+    text-align: center; color: var(--muted); font-size: 14px;
+  }
+  .end .thanks { font-size: 16px; color: var(--text); margin-bottom: 8px; }
+
+  .footer-note {
+    margin-top: 40px; text-align: center; color: var(--muted); font-size: 12px;
+  }
+
+  .v2-badge {
+    display: inline-block; background: var(--new); color: white;
+    font-size: 10px; padding: 2px 6px; border-radius: 4px;
+    font-weight: 700; margin-left: 8px; letter-spacing: 0.05em;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="label">STARLUX App 使用者問卷 — v2 預覽 <span class="v2-badge">V2</span></div>
+  <label class="toggle">
+    <input type="checkbox" id="cleanToggle">
+    <span>隱藏設計意圖(乾淨模擬)</span>
+  </label>
+</div>
+
+<div class="container">
+
+  <!-- Intro -->
+  <div class="intro">
+    <h1>STARLUX 星宇航空 App 使用經驗調查</h1>
+    <div class="meta">預估填答時間 7–9 分鐘 · 共 13 題</div>
+    <p>嗨!這是一份 UX 個人研究問卷,我正在分析 STARLUX App 的使用體驗,
+       想了解真實使用者遇過什麼狀況。</p>
+    <ul>
+      <li>問卷匿名,所有回應只用於本次研究</li>
+      <li>沒有對錯答案,寫你真實的感覺就好</li>
+      <li>若中途想離開可隨時關閉,資料不會被儲存</li>
+      <li>完成後若你願意接受 15 分鐘訪談,可在問卷中留聯絡方式</li>
+    </ul>
+  </div>
+
+  <!-- Part 1 -->
+  <div class="section-label">Part 1 — 篩選</div>
+
+  <div class="qcard">
+    <div class="qhead"><span class="qnum">Q1</span><h3 class="qtitle">過去 12 個月,你有沒有實際搭過星宇航空(STARLUX)?</h3></div>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q1"><span>有,1–2 次</span></label>
+      <label class="opt"><input type="radio" name="q1"><span>有,3 次以上</span></label>
+      <label class="opt"><input type="radio" name="q1"><span>沒有</span><span class="skiphint">→ 跳至結尾 A</span></label>
+    </div>
+  </div>
+
+  <div class="qcard">
+    <div class="qhead"><span class="qnum">Q2</span><h3 class="qtitle">你有沒有下載並實際使用過星宇 App?</h3></div>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q2"><span>用過,目前還在用</span></label>
+      <label class="opt"><input type="radio" name="q2"><span>用過,後來不用了 / 改用網頁</span></label>
+      <label class="opt"><input type="radio" name="q2"><span>從沒用過 / 只用網頁</span><span class="skiphint">→ 跳至結尾 B</span></label>
+    </div>
+  </div>
+
+  <!-- Part 2 -->
+  <div class="section-label">Part 2 — 行為畫像</div>
+
+  <div class="qcard">
+    <div class="qhead"><span class="qnum">Q3</span><h3 class="qtitle">過去一年,你開了 STARLUX App 後,因為某些原因改用網頁完成(訂票 / 報到 / 查資料)的次數大約?</h3></div>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q3"><span>0 次(App 都搞得定)</span></label>
+      <label class="opt"><input type="radio" name="q3"><span>1–2 次(偶爾)</span></label>
+      <label class="opt"><input type="radio" name="q3"><span>3–5 次(滿常)</span></label>
+      <label class="opt"><input type="radio" name="q3"><span>6 次以上(我幾乎都用網頁了)</span></label>
+    </div>
+    <div class="intent"><span class="lbl">設計意圖</span>量化「逃生口頻率」── 評論裡最常出現的行為,放在前段當暖身、門檻低、好答。</div>
+  </div>
+
+  <div class="qcard">
+    <div class="qhead"><span class="qnum">Q4</span><h3 class="qtitle">你打開 STARLUX App 最常做什麼?</h3></div>
+    <div class="qhint">請複選,最多選 3 項</div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" name="q4"><span>訂機票</span></label>
+      <label class="opt"><input type="checkbox" name="q4"><span>查看已訂行程</span></label>
+      <label class="opt"><input type="checkbox" name="q4"><span>線上報到 / 拿登機證</span></label>
+      <label class="opt"><input type="checkbox" name="q4"><span>查 COSMILE 哩程</span></label>
+      <label class="opt"><input type="checkbox" name="q4"><span>看促銷 / 跑馬燈資訊</span></label>
+      <label class="opt"><input type="checkbox" name="q4"><span>其他</span></label>
+    </div>
+    <input class="textinput" placeholder="其他用途(若有)請補充">
+  </div>
+
+  <div class="qcard">
+    <div class="qhead">
+      <span class="qnum">Q5</span>
+      <h3 class="qtitle">你會在以下哪些情境用 STARLUX App?</h3>
+      <span class="badge-new">V2 新增</span>
+    </div>
+    <table class="matrix">
+      <thead>
+        <tr><th style="text-align:left;">情境</th><th>從不</th><th>偶爾</th><th>經常</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>家裡</td><td><input type="radio" name="q5-1"></td><td><input type="radio" name="q5-1"></td><td><input type="radio" name="q5-1"></td></tr>
+        <tr><td>通勤 / 路上</td><td><input type="radio" name="q5-2"></td><td><input type="radio" name="q5-2"></td><td><input type="radio" name="q5-2"></td></tr>
+        <tr><td>機場</td><td><input type="radio" name="q5-3"></td><td><input type="radio" name="q5-3"></td><td><input type="radio" name="q5-3"></td></tr>
+        <tr><td>飛機上</td><td><input type="radio" name="q5-4"></td><td><input type="radio" name="q5-4"></td><td><input type="radio" name="q5-4"></td></tr>
+        <tr><td>旅途中(到目的地後)</td><td><input type="radio" name="q5-5"></td><td><input type="radio" name="q5-5"></td><td><input type="radio" name="q5-5"></td></tr>
+      </tbody>
+    </table>
+    <div class="intent"><span class="lbl">設計意圖</span>同 bug 在「家裡慢慢試」vs「機場趕著報到」嚴重度天差地遠。交叉分析「機場使用者」是不是受傷最重的群體。</div>
+  </div>
+
+  <!-- Part 3 -->
+  <div class="section-label">Part 3 — 純探索</div>
+
+  <div class="qcard">
+    <div class="qhead">
+      <span class="qnum">Q6</span>
+      <h3 class="qtitle">有沒有什麼讓你印象深刻、你覺得這份問卷應該要問但沒問到的事情?</h3>
+      <span class="badge-new">V2 新增</span>
+    </div>
+    <div class="qhint">在你過去使用 STARLUX App 的經驗中(可空白,可短可長)</div>
+    <textarea class="textarea" style="min-height:100px;" placeholder="例:「我覺得介面其實滿美的」、「我朋友幫我代訂時遇過...」、「Wallet 整合的部分..."></textarea>
+    <div class="intent"><span class="lbl">設計意圖</span>刻意放在情境題與量化題之前 ── 避免被後面 5 大痛點定錨。給「我發現的 5 大之外的東西」一個入口,抓 confirmation bias 的漏網之魚。</div>
+  </div>
+
+  <!-- Part 4 -->
+  <div class="section-label">Part 4 — 情境引導</div>
+
+  <div class="qcard">
+    <div class="qhead"><span class="qnum">Q7</span><h3 class="qtitle">訂票情境</h3></div>
+    <div class="scenario">
+      <span class="label">情境</span>
+      下週末,你跟朋友臨時揪定要去東京過長週末,你打開 STARLUX App 想訂兩個人的機票。
+    </div>
+    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">7a. 你會做的第一個動作是什麼?</p>
+    <textarea class="textarea" placeholder="簡短描述,1–2 句就好"></textarea>
+
+    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">7b. 你預期(或根據過去經驗知道)最可能會在哪一步卡住?</p>
+    <textarea class="textarea" placeholder="例如:選位、付款、確認頁..."></textarea>
+
+    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">7c. 如果這次真的卡住了,你最可能怎麼辦?</p>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q7c"><span>在 App 重試幾次</span></label>
+      <label class="opt"><input type="radio" name="q7c"><span>改用 STARLUX 網頁訂</span></label>
+      <label class="opt"><input type="radio" name="q7c"><span>改用其他訂票平台(如旅遊網、KAYAK)</span></label>
+      <label class="opt"><input type="radio" name="q7c"><span>改訂其他航空</span></label>
+      <label class="opt"><input type="radio" name="q7c"><span>直接放棄這次行程</span></label>
+    </div>
+  </div>
+
+  <div class="qcard">
+    <div class="qhead"><span class="qnum">Q8</span><h3 class="qtitle">報到情境</h3></div>
+    <div class="scenario">
+      <span class="label">情境</span>
+      想像出差當天早上 5 點,你準備在機場要做線上報到、拿登機證。
+    </div>
+    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">8a. 你最可能用什麼工具報到?</p>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q8a"><span>STARLUX App</span></label>
+      <label class="opt"><input type="radio" name="q8a"><span>STARLUX 網頁</span></label>
+      <label class="opt"><input type="radio" name="q8a"><span>機場自助 kiosk</span></label>
+      <label class="opt"><input type="radio" name="q8a"><span>直接到櫃台</span></label>
+      <label class="opt"><input type="radio" name="q8a"><span>不知道 / 看當下狀況</span></label>
+    </div>
+    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">8b. 過去你實際在 App 報到時遇過什麼狀況?(可空白)</p>
+    <textarea class="textarea" placeholder="可以空白,或寫遇過的問題"></textarea>
+  </div>
+
+  <div class="qcard">
+    <div class="badge-condition">⚙️ 條件顯示:Q4 勾選「查 COSMILE 哩程」者才看到</div>
+    <div class="qhead"><span class="qnum">Q9</span><h3 class="qtitle">哩程情境</h3></div>
+    <div class="scenario">
+      <span class="label">情境</span>
+      你想用累積的 COSMILE 哩程折抵下次機票。
+    </div>
+    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">9a. 你會打開 App 還是網頁處理?</p>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q9a"><span>App</span></label>
+      <label class="opt"><input type="radio" name="q9a"><span>網頁</span></label>
+      <label class="opt"><input type="radio" name="q9a"><span>不知道哪邊可以做</span></label>
+      <label class="opt"><input type="radio" name="q9a"><span>直接找客服</span></label>
+    </div>
+    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">9b. 過去實際用哩程的經驗?(可空白)</p>
+    <textarea class="textarea" placeholder="可以空白,或描述使用經驗"></textarea>
+  </div>
+
+  <!-- Part 5 -->
+  <div class="section-label">Part 5 — 量化驗證</div>
+
+  <div class="qcard">
+    <div class="qhead"><span class="qnum">Q10</span><h3 class="qtitle">過去 12 個月,以下情境你有沒有實際遇過?</h3></div>
+    <table class="matrix">
+      <thead>
+        <tr><th style="text-align:left;">情境</th><th>有遇過</th><th>沒遇過</th><th>不確定</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>收不到驗證碼信件 / 驗證碼欄位無法輸入</td>
+          <td><input type="radio" name="q10-1"></td><td><input type="radio" name="q10-1"></td><td><input type="radio" name="q10-1"></td></tr>
+        <tr><td>付款過程中當機,訂單消失或票價變更</td>
+          <td><input type="radio" name="q10-2"></td><td><input type="radio" name="q10-2"></td><td><input type="radio" name="q10-2"></td></tr>
+        <tr><td>行程資訊或哩程綁定後消失 / 顯示錯誤</td>
+          <td><input type="radio" name="q10-3"></td><td><input type="radio" name="q10-3"></td><td><input type="radio" name="q10-3"></td></tr>
+        <tr><td>App 內線上報到失敗,被迫改用網頁</td>
+          <td><input type="radio" name="q10-4"></td><td><input type="radio" name="q10-4"></td><td><input type="radio" name="q10-4"></td></tr>
+        <tr><td>反映問題給客服,只收到制式回覆</td>
+          <td><input type="radio" name="q10-5"></td><td><input type="radio" name="q10-5"></td><td><input type="radio" name="q10-5"></td></tr>
+      </tbody>
+    </table>
+
+    <p style="margin: 18px 0 4px; font-weight: 600; font-size: 14px;">Q10b. 你勾「有遇過」的痛點中,哪幾個對你影響最大?</p>
+    <div class="qhint">請排前 3 名(1 = 最有感)</div>
+    <div class="opts">
+      <label class="opt"><span>1️⃣ 最有感:</span>
+        <select style="margin-left:8px; padding:4px 8px; border-radius:6px; border:1px solid var(--border);">
+          <option>(從你勾「有遇過」的選項中選)</option>
+        </select>
+      </label>
+      <label class="opt"><span>2️⃣ 第二:</span>
+        <select style="margin-left:8px; padding:4px 8px; border-radius:6px; border:1px solid var(--border);">
+          <option>(從你勾「有遇過」的選項中選)</option>
+        </select>
+      </label>
+      <label class="opt"><span>3️⃣ 第三:</span>
+        <select style="margin-left:8px; padding:4px 8px; border-radius:6px; border:1px solid var(--border);">
+          <option>(從你勾「有遇過」的選項中選)</option>
+        </select>
+      </label>
+    </div>
+    <div class="intent"><span class="lbl">設計意圖</span>主表 = 頻率(命中率),Q10b = 嚴重度(主觀影響)。兩個一起 → 畫出「頻率 × 嚴重度」優先矩陣。</div>
+  </div>
+
+  <!-- Interview invitation - moved up from end -->
+  <div class="interview">
+    <h3>🎤 訪談邀請(選填) <span class="badge-new" style="background:#fff; color:var(--interview-text); border:1px solid var(--interview-border);">V2 提前</span></h3>
+    <p>你完成大部分問卷了 🙏 如果你願意接受 <strong>15 分鐘的線上訪談</strong>深聊你的經驗,請留下聯絡方式:</p>
+    <input class="textinput" placeholder="Email / IG / Line ID(選填)">
+    <div class="intent" style="margin-top:14px;"><span class="lbl">設計意圖</span>剛打完 Q10 量化驗證,參與度高、回憶鮮明,此時邀請訪談的轉換率最佳。不要拖到問卷尾端才邀請。</div>
+  </div>
+
+  <!-- Part 6 -->
+  <div class="section-label">Part 6 — 整體感受</div>
+
+  <div class="qcard">
+    <div class="qhead">
+      <span class="qnum">Q11</span>
+      <h3 class="qtitle">分別給以下兩件事打分</h3>
+      <span class="badge-new">V2 新增</span>
+    </div>
+    <div class="qhint">1 = 最差,5 = 最好</div>
+
+    <div class="rating-row">
+      <span class="rl">STARLUX 品牌好感度</span>
+      <div class="stars">
+        <label><input type="radio" name="q11-brand"><span>1</span></label>
+        <label><input type="radio" name="q11-brand"><span>2</span></label>
+        <label><input type="radio" name="q11-brand"><span>3</span></label>
+        <label><input type="radio" name="q11-brand"><span>4</span></label>
+        <label><input type="radio" name="q11-brand"><span>5</span></label>
+      </div>
+      <div class="rh"><span>1 完全不喜歡</span><span>5 非常喜歡</span></div>
+    </div>
+
+    <div class="rating-row">
+      <span class="rl">STARLUX App 好用度</span>
+      <div class="stars">
+        <label><input type="radio" name="q11-app"><span>1</span></label>
+        <label><input type="radio" name="q11-app"><span>2</span></label>
+        <label><input type="radio" name="q11-app"><span>3</span></label>
+        <label><input type="radio" name="q11-app"><span>4</span></label>
+        <label><input type="radio" name="q11-app"><span>5</span></label>
+      </div>
+      <div class="rh"><span>1 完全難用</span><span>5 非常好用</span></div>
+    </div>
+
+    <div class="intent"><span class="lbl">設計意圖</span>真實使用者常常是矛盾的 ── 品牌愛但 App 恨。兩個分開打分,落差直接視覺化。報告呈現「品牌 4.3 vs App 2.1」的鴻溝會非常有衝擊力。</div>
+  </div>
+
+  <div class="qcard">
+    <div class="qhead">
+      <span class="qnum">Q12</span>
+      <h3 class="qtitle">對手比較</h3>
+      <span class="badge-new">V2 新增</span>
+    </div>
+
+    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">12a. 你最常用的<strong>其他</strong>航空 / 旅遊 App 是?</p>
+    <div class="qhint">例如:長榮、華航、Booking、Klook、Skyscanner...</div>
+    <input class="textinput" placeholder="App 名稱">
+
+    <p style="margin: 18px 0 4px; font-weight: 600; font-size: 14px;">12b. 跟那個 App 比,STARLUX 有哪些地方做得<strong>比較好</strong>?</p>
+    <textarea class="textarea" placeholder="可以空白,或具體寫出來"></textarea>
+
+    <p style="margin: 18px 0 4px; font-weight: 600; font-size: 14px;">12c. 跟那個 App 比,STARLUX 有哪些地方做得<strong>比較差</strong>?</p>
+    <textarea class="textarea" placeholder="可以空白,或具體寫出來"></textarea>
+
+    <div class="intent"><span class="lbl">設計意圖</span>12a 提供對比錨點 ── 沒有對手,「App 不好用」是抽象;有對手,變具體。12b 是正面通道(避免印證偏誤),12c 拿到「對手做得到的,星宇沒做到」── 直接餵給設計提案。</div>
+  </div>
+
+  <!-- Part 7 -->
+  <div class="section-label">Part 7 — 中性收尾</div>
+
+  <div class="qcard">
+    <div class="qhead">
+      <span class="qnum">Q13</span>
+      <h3 class="qtitle">最近一次用 STARLUX App,有沒有哪個瞬間讓你<strong>印象最深</strong>?</h3>
+      <span class="badge-new">V2 改寫</span>
+    </div>
+    <div class="qhint">好或壞都可以,可空白</div>
+    <textarea class="textarea" style="min-height:120px;" placeholder="例:登入時驗證碼一直填不進去,試了五次後我關掉 App 改用網頁... 或:介面真的滿好看的,訂票流程其實還算順..."></textarea>
+    <div class="intent"><span class="lbl">設計意圖</span>v1 的「想罵髒話」框架太負面、會誘發極端回憶。v2 改成中性「印象最深」,好壞並陳,拿到更乾淨的資料。</div>
+  </div>
+
+  <!-- End -->
+  <div class="end">
+    <div class="thanks">🙏 謝謝你完成問卷!</div>
+    <p style="margin-top:8px;">你的回答會被用來做 STARLUX App UX 優化研究。<br>
+      如果你身邊還有其他星宇 App 使用者,歡迎幫忙轉發。</p>
+  </div>
+
+  <div class="footer-note">
+    v2 — 預覽用,非實際收件 · STARLUX UX Research<br>
+    對比 v1:<a href="v1.html" style="color:var(--accent);">v1.html</a>
+  </div>
+
+</div>
+
+<script>
+  const cleanToggle = document.getElementById('cleanToggle');
+  cleanToggle.addEventListener('change', (e) => {
+    document.body.classList.toggle('clean', e.target.checked);
+  });
+
+  // Star rating visual feedback
+  document.querySelectorAll('.stars').forEach(group => {
+    group.addEventListener('change', (e) => {
+      group.querySelectorAll('label').forEach(l => l.style.background = '');
+      const checked = group.querySelector('input:checked');
+      if (checked) checked.closest('label').style.background = 'var(--accent-soft)';
+    });
+  });
+</script>
+
+</body>
+</html>

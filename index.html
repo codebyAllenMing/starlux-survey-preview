@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STARLUX App 使用者問卷 — UX 研究專案</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --border: #e3e6eb;
+    --text: #1a1d21;
+    --muted: #6b7280;
+    --accent: #1e40af;
+    --accent-soft: #eef2ff;
+    --new: #047857;
+    --new-bg: #d1fae5;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; background: var(--bg);
+    font-family: "Noto Sans TC", "PingFang TC", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text); line-height: 1.7; font-size: 15px;
+  }
+  .container { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  .hero { margin-bottom: 40px; }
+  .eyebrow {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.15em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .hero h1 {
+    font-size: 32px; font-weight: 700; margin: 0 0 12px;
+    line-height: 1.3;
+  }
+  .hero .tagline { font-size: 17px; color: var(--muted); margin: 0; }
+
+  .meta-row {
+    display: flex; gap: 24px; flex-wrap: wrap;
+    margin: 24px 0 0; padding: 16px 0;
+    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    font-size: 13px; color: var(--muted);
+  }
+  .meta-row .item strong { color: var(--text); display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 2px; }
+
+  section { margin: 48px 0; }
+  section h2 {
+    font-size: 20px; font-weight: 700; margin: 0 0 16px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+
+  .pains {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-top: 16px;
+  }
+  .pain {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .pain .star {
+    display: inline-block; background: #fee2e2; color: #991b1b;
+    font-weight: 700; font-size: 12px; padding: 2px 7px; border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  .pain .title { font-weight: 600; font-size: 14px; }
+  .pain .desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .versions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .vcard {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; text-decoration: none; color: inherit;
+    transition: all 0.15s ease; display: block;
+  }
+  .vcard:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(30,64,175,0.08); }
+  .vcard .vlabel {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 3px 8px; border-radius: 4px; letter-spacing: 0.05em;
+  }
+  .vcard.v1 .vlabel { background: #f3f4f6; color: var(--muted); }
+  .vcard.v2 .vlabel { background: var(--new-bg); color: var(--new); }
+  .vcard .vtitle { font-size: 17px; font-weight: 700; margin: 8px 0 4px; }
+  .vcard .vmeta { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .vcard .vdesc { font-size: 13.5px; color: var(--text); }
+  .vcard .vlink {
+    margin-top: 14px; color: var(--accent); font-weight: 600; font-size: 13px;
+  }
+
+  .flow {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 8px; margin-top: 16px; font-size: 12px;
+  }
+  .step {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 10px; text-align: center;
+  }
+  .step .n {
+    display: inline-block; background: var(--accent-soft); color: var(--accent);
+    font-weight: 700; padding: 2px 7px; border-radius: 999px;
+    font-size: 11px; margin-bottom: 6px;
+  }
+  .step .name { font-weight: 600; font-size: 12px; }
+  .step .what { color: var(--muted); font-size: 11px; margin-top: 2px; line-height: 1.4; }
+
+  .diff-list {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 22px; margin-top: 16px;
+  }
+  .diff-list ul { margin: 0; padding-left: 18px; }
+  .diff-list li { margin-bottom: 6px; font-size: 14px; }
+  .diff-list li strong { color: var(--new); }
+
+  footer {
+    margin-top: 64px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 13px;
+    text-align: center;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .pains, .versions, .flow { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="eyebrow">UX Research · 2026 · 個人專案</div>
+    <h1>STARLUX 星宇航空 App 體驗優化 — 使用者問卷</h1>
+    <p class="tagline">基於 626+ 則真實評論與量化分析,設計用於驗證 5 大痛點的問卷</p>
+
+    <div class="meta-row">
+      <div class="item"><strong>角色</strong>UX Designer / Researcher</div>
+      <div class="item"><strong>方法</strong>App Review Mining + Cluster Analysis + Survey Design</div>
+      <div class="item"><strong>工具</strong>TypeScript · Python · Figma · Claude Code MCP</div>
+    </div>
+  </div>
+
+  <!-- 專案脈絡 -->
+  <section>
+    <h2>專案脈絡</h2>
+    <p>STARLUX 以高端品牌建立實體服務口碑,但 App 在使用者端累積大量負評。
+    本專案以 UX 研究角度切入,目標為:</p>
+    <ul>
+      <li>用真實使用者評論(非憑空 persona)識別關鍵痛點</li>
+      <li>透過量化問卷驗證痛點普遍性,並補上評論抓不到的行為頻率</li>
+      <li>產出使用者旅程地圖(Journey Map)與訂票流程的優化提案</li>
+    </ul>
+  </section>
+
+  <!-- 研究方法 / 工作流 -->
+  <section>
+    <h2>研究工作流</h2>
+    <div class="flow">
+      <div class="step">
+        <div class="n">1</div>
+        <div class="name">抓真實評論</div>
+        <div class="what">自寫 TS scraper<br>App Store + Google Play<br>4 區域共 626+ 則</div>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <div class="name">Cluster 分析</div>
+        <div class="what">Python<br>8 主題分群<br>5 大痛點 + 引言鐵證</div>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <div class="name">Journey Map</div>
+        <div class="what">Figma + MCP<br>真實 pain points<br>取代憑空 persona</div>
+      </div>
+      <div class="step">
+        <div class="n">4</div>
+        <div class="name">問卷設計 ✦</div>
+        <div class="what"><strong>本頁所在</strong><br>v1 → v2 思想衝撞<br>驗證痛點 + 量化頻率</div>
+      </div>
+      <div class="step">
+        <div class="n">5</div>
+        <div class="name">設計提案</div>
+        <div class="what">待進行<br>訂票流程改版<br>+ Heuristic Walkthrough</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 大痛點 -->
+  <section>
+    <h2>5 大痛點(來自評論分析)</h2>
+    <div class="pains">
+      <div class="pain">
+        <span class="star">★ 1.45</span>
+        <div class="title">登入 / 驗證碼鏈卡關</div>
+        <div class="desc">全 cluster 最低分。驗證碼信收不到 / 收到無法輸入 / 帳號鬼打牆</div>
+      </div>
+      <div class="pain">
+        <span class="star">★ 1.83</span>
+        <div class="title">訂票 / 付款當機</div>
+        <div class="desc">量最大。付款頁當機 → 訂單消失 → 重買票價變更貴</div>
+      </div>
+      <div class="pain">
+        <span class="star">★ 1.96</span>
+        <div class="title">COSMILE 哩程 / 會員消失</div>
+        <div class="desc">主要打到常客。哩程綁定後行程消失、partner 哩程無法存取</div>
+      </div>
+      <div class="pain">
+        <span class="star">★ 2.15</span>
+        <div class="title">App 內報到失敗</div>
+        <div class="desc">App 報到失敗 → 被迫逃到網頁。Stage 3 完全失能</div>
+      </div>
+      <div class="pain">
+        <span class="star">★ 1.57</span>
+        <div class="title">客服制式回覆</div>
+        <div class="desc">「資訊不足,請填表單」── 表單也送不出去,形成惡性循環</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 問卷版本 -->
+  <section>
+    <h2>問卷版本</h2>
+    <p style="color:var(--muted); font-size:14px;">點下方卡片進入互動預覽(可點選但無提交)。每張卡片下方有「設計意圖」說明,可在右上角切換隱藏。</p>
+
+    <div class="versions">
+      <a class="vcard v1" href="v1.html">
+        <span class="vlabel">V1</span>
+        <div class="vtitle">v1 — 初版骨架</div>
+        <div class="vmeta">10 題 · 5–7 分鐘</div>
+        <div class="vdesc">以 5 大痛點為對照基底,情境引導 + 量化驗證的初版結構。</div>
+        <div class="vlink">開啟 v1 →</div>
+      </a>
+
+      <a class="vcard v2" href="v2.html">
+        <span class="vlabel">V2 推薦</span>
+        <div class="vtitle">v2 — 衝撞後修正</div>
+        <div class="vmeta">13 題 · 7–9 分鐘</div>
+        <div class="vdesc">補上純探索題、對手比較、雙軸打分、使用情境,並將訪談邀請前移。</div>
+        <div class="vlink">開啟 v2 →</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- v1 → v2 -->
+  <section>
+    <h2>v1 → v2 進化重點</h2>
+    <div class="diff-list">
+      <ul>
+        <li><strong>新增純探索題</strong>(Q6)避免 confirmation bias,給 5 大之外的痛點一個入口</li>
+        <li><strong>新增使用情境矩陣</strong>(Q5)抓「在哪裡用」── 機場 vs 家裡嚴重度天差地遠</li>
+        <li><strong>新增雙軸打分</strong>(Q11)品牌好感度 vs App 好用度分開 ── 視覺化「品牌愛但 App 恨」的鴻溝</li>
+        <li><strong>新增對手比較</strong>(Q12)三子題:對手是誰 / 比較好 / 比較差 ── 同時取得正向通道與比較錨點</li>
+        <li><strong>訪談邀請上移</strong>到 Q10 之後 ── 受訪者參與度最高時邀請,提高轉換率</li>
+        <li><strong>開放收尾中性化</strong>(Q13)「想罵髒話」→「印象最深」── 不預設負面,拿到更乾淨資料</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    Designed by Allen · 2026<br>
+    <a href="https://github.com/codebyAllenMing/starlux-survey-preview">View on GitHub</a>
+  </footer>
+
+</div>
+</body>
+</html>

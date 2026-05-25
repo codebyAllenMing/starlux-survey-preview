@@ -66,10 +66,10 @@
   .pain .title { font-weight: 600; font-size: 14px; }
   .pain .desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
 
-  .versions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  .versions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; }
   .vcard {
     background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 24px; text-decoration: none; color: inherit;
+    border-radius: 12px; padding: 20px; text-decoration: none; color: inherit;
     transition: all 0.15s ease; display: block;
   }
   .vcard:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(30,64,175,0.08); }
@@ -79,9 +79,10 @@
   }
   .vcard.v1 .vlabel { background: #f3f4f6; color: var(--muted); }
   .vcard.v2 .vlabel { background: var(--new-bg); color: var(--new); }
-  .vcard .vtitle { font-size: 17px; font-weight: 700; margin: 8px 0 4px; }
-  .vcard .vmeta { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
-  .vcard .vdesc { font-size: 13.5px; color: var(--text); }
+  .vcard.v3 .vlabel { background: var(--accent-soft); color: var(--accent); }
+  .vcard .vtitle { font-size: 16px; font-weight: 700; margin: 8px 0 4px; }
+  .vcard .vmeta { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .vcard .vdesc { font-size: 13px; color: var(--text); }
   .vcard .vlink {
     margin-top: 14px; color: var(--accent); font-weight: 600; font-size: 13px;
   }
@@ -118,8 +119,11 @@
   }
   footer a { color: var(--accent); text-decoration: none; }
 
+  @media (max-width: 720px) {
+    .versions { grid-template-columns: 1fr; }
+  }
   @media (max-width: 600px) {
-    .pains, .versions, .flow { grid-template-columns: 1fr; }
+    .pains, .flow { grid-template-columns: 1fr; }
     .hero h1 { font-size: 26px; }
   }
 </style>
@@ -232,25 +236,49 @@
 
       <a class="vcard v2" href="v2.html">
         <span class="vlabel">V2</span>
-        <div class="vtitle">v2 — 衝撞後修正</div>
+        <div class="vtitle">v2 — 衝撞後擴張</div>
         <div class="vmeta">13 題 · 7–9 分鐘</div>
         <div class="vdesc">補上純探索題、對手比較、雙軸打分、使用情境,並將訪談邀請前移。</div>
         <div class="vlink">開啟 v2 →</div>
       </a>
+
+      <a class="vcard v3" href="v3.html">
+        <span class="vlabel">V3</span>
+        <div class="vtitle">v3 — 對焦後收攏</div>
+        <div class="vmeta">4 題 · 2–4 分鐘</div>
+        <div class="vdesc">與總監對焦後反向收攏,目標明確化:找 App 哪環節最難用。</div>
+        <div class="vlink">開啟 v3 →</div>
+      </a>
     </div>
   </section>
 
-  <!-- v1 → v2 -->
+  <!-- 版本演進 -->
   <section>
-    <h2>v1 → v2 進化重點</h2>
+    <h2>版本演進說明</h2>
+
+    <p style="color:var(--muted); font-size:14px;">問卷經兩輪反向迭代而成:第一輪向「擴張」走、第二輪向「收攏」走。</p>
+
+    <h3 style="font-size:15px; margin-top:24px; color:var(--text);">v1 → v2:思想衝撞(擴張)</h3>
     <div class="diff-list">
       <ul>
-        <li><strong>新增純探索題</strong>(Q6)避免 confirmation bias,給 5 大之外的痛點一個入口</li>
-        <li><strong>新增使用情境矩陣</strong>(Q5)抓「在哪裡用」── 機場 vs 家裡嚴重度天差地遠</li>
-        <li><strong>新增雙軸打分</strong>(Q11)品牌好感度 vs App 好用度分開 ── 視覺化「品牌愛但 App 恨」的鴻溝</li>
-        <li><strong>新增對手比較</strong>(Q12)三子題:對手是誰 / 比較好 / 比較差 ── 同時取得正向通道與比較錨點</li>
-        <li><strong>訪談邀請上移</strong>到 Q10 之後 ── 受訪者參與度最高時邀請,提高轉換率</li>
-        <li><strong>開放收尾中性化</strong>(Q13)「想罵髒話」→「印象最深」── 不預設負面,拿到更乾淨資料</li>
+        <li><strong>新增純探索題</strong>避免 confirmation bias,給 5 大之外的痛點一個入口</li>
+        <li><strong>新增使用情境矩陣</strong>抓「在哪裡用」── 機場 vs 家裡嚴重度天差地遠</li>
+        <li><strong>新增雙軸打分</strong>品牌好感度 vs App 好用度分開 ── 視覺化「品牌愛但 App 恨」的鴻溝</li>
+        <li><strong>新增對手比較</strong>三子題:對手是誰 / 比較好 / 比較差</li>
+        <li><strong>訪談邀請上移</strong>到 Q10 之後 ── 受訪者參與度最高時邀請</li>
+      </ul>
+    </div>
+
+    <h3 style="font-size:15px; margin-top:24px; color:var(--text);">v2 → v3:對焦總監後(收攏)</h3>
+    <div class="diff-list">
+      <ul>
+        <li><strong>目標明確化</strong>:從「全面驗證痛點」收攏為「找 App 哪環節最難用」</li>
+        <li><strong>砍掉所有「想像」框架</strong> ── 沒經驗的人想像不出來 → 改成「最近一次的實際經驗」</li>
+        <li><strong>砍掉「逃網頁」相關選項</strong> ── 偏離 App 內優化目標</li>
+        <li><strong>報到/哩程不單獨成題</strong> ── 太限縮,融進「整段旅程」一題</li>
+        <li><strong>加 gate 分流</strong>:沒做過某事 → 直接跳下一題,避免污染資料</li>
+        <li><strong>痛點對照表加條件式追問</strong>:勾「有」跳出 textarea 補充原因</li>
+        <li><strong>從 13 題收到 4 題</strong>,填答時間 2–4 分鐘,完成率最大化</li>
       </ul>
     </div>
   </section>

@@ -129,6 +129,32 @@
     font-size: 12.5px; color: var(--muted); display: block; margin-bottom: 4px;
   }
 
+  /* Q3 其他 — 動態新增列表 */
+  .other-list { margin-top: 10px; }
+  .other-item {
+    display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px;
+  }
+  .other-item textarea {
+    flex: 1; min-height: 50px; margin-top: 0;
+  }
+  .remove-btn {
+    flex: 0 0 auto; width: 36px; height: 36px;
+    border: 1px solid var(--border); background: white;
+    border-radius: 6px; cursor: pointer; color: var(--muted);
+    font-size: 20px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .remove-btn:hover { border-color: var(--skip-text); color: var(--skip-text); background: var(--skip-bg); }
+  .add-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border: 1px dashed var(--accent);
+    background: white; border-radius: 8px; cursor: pointer;
+    color: var(--accent); font-size: 13px; font-weight: 600;
+    margin-top: 6px; transition: all 0.15s;
+  }
+  .add-btn:hover { background: var(--accent-soft); }
+
   .intent {
     margin-top: 14px; background: var(--intent-bg);
     border: 1px dashed var(--intent-border); border-radius: 8px;
@@ -304,22 +330,24 @@
     <!-- Other -->
     <div class="pain-row" style="border-style:dashed;">
       <div class="label">
-        <div class="text"><strong>5. 其他</strong> ── 你遇過、上面沒列到的痛點</div>
+        <div class="text"><strong>5. 其他</strong> ── 你遇過、上面沒列到的痛點(可填多項)</div>
       </div>
-      <div style="margin-top:8px;">
-        <textarea class="textarea" style="min-height:60px;" placeholder="請描述其他你遇過的問題(可空白)"></textarea>
+      <div class="other-list" id="otherList">
+        <div class="other-item">
+          <textarea class="textarea" placeholder="請描述其他你遇過的問題(可空白)"></textarea>
+        </div>
       </div>
+      <button type="button" class="add-btn" onclick="addOther()">+ 新增一項</button>
     </div>
 
     <!-- Q3b -->
     <p style="margin: 22px 0 4px; font-weight: 600; font-size: 14px;">Q3b. 你勾「有遇過」的痛點中,<strong>對你影響最大</strong>的是哪一個?</p>
-    <div class="qhint">單選 — 只列出你剛剛勾「有」的選項 + 「其他」</div>
+    <div class="qhint">單選 — 只列出你剛剛勾「有」的選項</div>
     <div class="opts">
       <label class="opt"><input type="radio" name="q3b"><span>1. 驗證碼問題</span></label>
       <label class="opt"><input type="radio" name="q3b"><span>2. 付款當機</span></label>
       <label class="opt"><input type="radio" name="q3b"><span>3. 行程 / 哩程消失</span></label>
       <label class="opt"><input type="radio" name="q3b"><span>4. 報到失敗</span></label>
-      <label class="opt"><input type="radio" name="q3b"><span>5. 我上面寫的「其他」</span></label>
     </div>
 
     <div class="intent"><span class="lbl">設計意圖</span>砍時間框「過去 12 個月」+ 砍「不確定」選項(強迫表態)+ 砍客服(App 之外延伸)+ 第 4 條去逃網頁框架。每條勾「有」跳出 textarea = 拿 specific 痛點故事,跟 Q2 整段故事不同粒度。Q3b 從排前 3 改單選最有感。</div>
@@ -367,6 +395,21 @@
       }
     });
   });
+
+  // Q3 其他 — 動態新增/刪除
+  function addOther() {
+    const list = document.getElementById('otherList');
+    const item = document.createElement('div');
+    item.className = 'other-item';
+    item.innerHTML = `
+      <textarea class="textarea" placeholder="再補充一項"></textarea>
+      <button type="button" class="remove-btn" onclick="removeOther(this)" title="刪除這項">×</button>
+    `;
+    list.appendChild(item);
+  }
+  function removeOther(btn) {
+    btn.closest('.other-item').remove();
+  }
 </script>
 
 </body>

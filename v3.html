@@ -248,20 +248,17 @@
 
     <div class="gate">
       <span class="lbl">Gate 題</span>
-      <div class="question">你有沒有用 STARLUX App <strong>完成過一趟旅程</strong>(包含訂票 / 改票 / 報到等)?</div>
+      <div class="question">你有沒有實際用 STARLUX App <strong>自己操作過什麼</strong>?(訂票 / 改票 / 報到 / 用哩程 等)</div>
       <div class="opts" style="margin-top:0;">
-        <label class="opt"><input type="radio" name="q2-gate"><span>有 → 繼續 2a / 2b</span></label>
+        <label class="opt"><input type="radio" name="q2-gate"><span>有 → 繼續</span></label>
         <label class="opt"><input type="radio" name="q2-gate"><span>沒有(我只用 App 查行程 / 看促銷)</span><span class="skiphint">→ 跳到 Q3</span></label>
       </div>
     </div>
 
-    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">2a. 請描述你<strong>最近一次</strong>用 App 的體驗,從訂票到落地,你遇到了哪些<strong>不順、卡住、讓你不開心</strong>的地方?</p>
-    <textarea class="textarea" placeholder="可以隨意寫,從訂票到落地任何過程"></textarea>
+    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">請描述你<strong>最近一次</strong>用 App 的體驗,從訂票到落地,你遇到了哪些<strong>不順、卡住</strong>的地方?<br><span style="font-weight:400; color:var(--muted); font-size:13px;">特別寫出最卡 / 最難用的環節。</span></p>
+    <textarea class="textarea" style="min-height:120px;" placeholder="可以隨意寫。例如:訂票時付款卡住、報到頁面一直轉圈、登入要驗證碼結果一直收不到..."></textarea>
 
-    <p style="margin: 14px 0 4px; font-weight: 600; font-size: 14px;">2b. 整段過程中,<strong>最卡 / 最難用</strong>的是哪個環節?</p>
-    <input class="textinput" placeholder="例如:選位、付款、報到...">
-
-    <div class="intent"><span class="lbl">設計意圖</span>取代 v1 的訂票/報到/哩程三個情境題 ── 因為「報到」「哩程」太限縮。用「最近一次的實際經驗」+ gate 過濾無經驗者。2a 拿故事,2b 強迫挑出 anchor。</div>
+    <div class="intent"><span class="lbl">設計意圖</span>取代 v1 的訂票/報到/哩程三個情境題 ── 因為「報到」「哩程」太限縮。用「最近一次的實際經驗」+ gate 過濾無經驗者。合併原本的 2a 故事 + 2b anchor,引導語直接點明「特別寫最卡的環節」,避免重複。</div>
   </div>
 
   <!-- Q3 -->

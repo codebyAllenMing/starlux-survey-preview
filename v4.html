@@ -136,6 +136,7 @@
     transition: all 0.15s ease;
   }
   .rating label:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .rating label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
   .rating input { display: none; }
   .rating label .num { font-size: 20px; font-weight: 700; color: var(--muted); display: block; }
   .rating label .desc { font-size: 11px; color: var(--muted); margin-top: 2px; display: block; min-height: 14px; }

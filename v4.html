@@ -629,7 +629,7 @@
     const pct = Math.round((idx / (flow.length - 1)) * 100);
     document.getElementById('bar').style.width = pct + '%';
     if (current() === 'intro') {
-      document.getElementById('progressText').textContent = '開始';
+      document.getElementById('progressText').textContent = '';
     } else if (current().startsWith('end')) {
       document.getElementById('progressText').textContent = '完成';
     } else {

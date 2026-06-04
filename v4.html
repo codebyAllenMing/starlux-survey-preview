@@ -206,6 +206,48 @@
     font-size: 12px; color: var(--muted); z-index: 10;
     background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 4px;
   }
+
+  /* --- Mobile responsive --- */
+  @media (max-width: 600px) {
+    body { font-size: 15px; }
+    .stage { padding: 56px 16px 40px; }
+    .step { max-width: 100%; }
+    .qnum { font-size: 10px; margin-bottom: 10px; }
+    .qtitle { font-size: 19px; line-height: 1.45; }
+    .qhint { font-size: 13px; margin-bottom: 20px; }
+    .opts { margin-bottom: 24px; }
+    .opt { padding: 12px 14px; font-size: 14px; gap: 10px; }
+    .opt-stack .opt-row { padding: 12px 14px; gap: 10px; }
+    .opt-stack .opt-inline-input {
+      width: calc(100% - 28px);
+      margin: 0 14px 12px 14px;
+      font-size: 13px; padding: 8px 10px;
+    }
+    .textinput, .textarea { padding: 12px 14px; font-size: 14px; }
+    .textarea { min-height: 90px; }
+    .rating { gap: 6px; }
+    .rating label { padding: 14px 2px; border-width: 1px; }
+    .rating label .num { font-size: 17px; }
+    .rating-row { font-size: 11px; }
+    .actions { gap: 8px; }
+    .btn { padding: 11px 16px; font-size: 14px; }
+    .btn-secondary { padding: 11px 4px; font-size: 13px; }
+    .intro h1 { font-size: 22px; line-height: 1.4; }
+    .intro .meta { font-size: 13px; padding-bottom: 16px; margin-bottom: 16px; }
+    .intro ul { font-size: 13px; padding-left: 18px; }
+    .outro h1 { font-size: 22px; }
+    .outro p { font-size: 14px; }
+    .interview-block { padding: 14px; }
+    .interview-block label { font-size: 13px; }
+    .progress-text { font-size: 11px; top: 14px; right: 14px; }
+    .topbar-extra { font-size: 11px; top: 14px; left: 14px; padding: 3px 8px; }
+  }
+  @media (max-width: 380px) {
+    .rating label { padding: 12px 2px; }
+    .rating label .num { font-size: 15px; }
+    .qtitle { font-size: 17px; }
+    .opt { padding: 10px 12px; font-size: 13.5px; }
+  }
 </style>
 </head>
 <body>

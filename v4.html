@@ -135,6 +135,8 @@
     background: var(--card);
     transition: all 0.15s ease;
   }
+  .rating input { display: none; }
+  .rating label .num { font-size: 20px; font-weight: 700; color: var(--muted); display: block; }
   .rating label:hover { border-color: var(--accent); background: var(--accent-soft); }
   .rating label:has(input:checked) {
     border-color: var(--accent);
@@ -143,9 +145,7 @@
     box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
     transform: translateY(-2px);
   }
-  .rating label:has(input:checked) .num { color: white; }
-  .rating input { display: none; }
-  .rating label .num { font-size: 20px; font-weight: 700; color: var(--muted); display: block; }
+  .rating label:has(input:checked) .num { color: #ffffff !important; }
   .rating-row {
     display: flex; justify-content: space-between;
     font-size: 12px; color: var(--muted); margin-top: -16px; margin-bottom: 28px;

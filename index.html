@@ -66,7 +66,7 @@
   .pain .title { font-weight: 600; font-size: 14px; }
   .pain .desc { font-size: 13px; color: var(--muted); margin-top: 4px; }
 
-  .versions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .versions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
   .vcard {
     background: var(--card); border: 1px solid var(--border);
     border-radius: 12px; padding: 20px; text-decoration: none; color: inherit;
@@ -80,6 +80,7 @@
   .vcard.v1 .vlabel { background: #f3f4f6; color: var(--muted); }
   .vcard.v2 .vlabel { background: var(--new-bg); color: var(--new); }
   .vcard.v3 .vlabel { background: var(--accent-soft); color: var(--accent); }
+  .vcard.v4 .vlabel { background: var(--accent); color: white; }
   .vcard .vtitle { font-size: 16px; font-weight: 700; margin: 8px 0 4px; }
   .vcard .vmeta { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
   .vcard .vdesc { font-size: 13px; color: var(--text); }
@@ -249,6 +250,14 @@
         <div class="vdesc">與總監對焦後反向收攏,目標明確化:找 App 哪環節最難用。</div>
         <div class="vlink">開啟 v3 →</div>
       </a>
+
+      <a class="vcard v4" href="v4.html">
+        <span class="vlabel">V4 LATEST</span>
+        <div class="vtitle">v4 — 會議反饋整合</div>
+        <div class="vmeta">8–11 題 · 2–4 分鐘</div>
+        <div class="vdesc">v3 narrative + 第二輪會議要求:每題一畫面 + 進度條、評分制、流程細節拆解、商務/旅遊情境。</div>
+        <div class="vlink">開啟 v4 →</div>
+      </a>
     </div>
   </section>
 
@@ -279,6 +288,20 @@
         <li><strong>加 gate 分流</strong>:沒做過某事 → 直接跳下一題,避免污染資料</li>
         <li><strong>痛點對照表加條件式追問</strong>:勾「有」跳出 textarea 補充原因</li>
         <li><strong>從 13 題收到 4 題</strong>,填答時間 2–4 分鐘,完成率最大化</li>
+      </ul>
+    </div>
+
+    <h3 style="font-size:15px; margin-top:24px; color:var(--text);">v3 → v4:第二輪會議反饋整合</h3>
+    <div class="diff-list">
+      <ul>
+        <li><strong>UX 重做</strong>:每題一畫面 + 上方進度條 + 上下題切換,取代滾動長表單</li>
+        <li><strong>新增使用情境題</strong>(商務出差 vs 個人旅遊):為後續交叉分析鋪路</li>
+        <li><strong>流程拆細階段</strong>:訂票/改票/報到/里程,各拆 4–7 個 micro-task,直接定位卡點</li>
+        <li><strong>痛點題改評分制</strong>:Q9 系統訊息明確度(1–5)、Q10 整體 App 體驗(1–5)</li>
+        <li><strong>條件式跳題</strong>:Q3 流程篩選決定 Q4–Q7 顯示哪些,沒做過自動跳過</li>
+        <li><strong>互斥邏輯</strong>:「都沒實際做過」與 4 流程互斥,避免資料污染</li>
+        <li><strong>選項條件式追問</strong>:每勾一個步驟下方滑出 textarea 補充,「其他」必填</li>
+        <li><strong>保留 v3 旅程故事題</strong>:質化 + 量化雙重證據</li>
       </ul>
     </div>
   </section>

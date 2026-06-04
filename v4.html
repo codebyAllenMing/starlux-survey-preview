@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STARLUX App 使用者問卷 — v4</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --border: #e3e6eb;
+    --text: #1a1d21;
+    --muted: #6b7280;
+    --accent: #1e40af;
+    --accent-soft: #eef2ff;
+    --skip-bg: #fee2e2;
+    --skip-text: #991b1b;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; min-height: 100vh;
+    background: var(--bg);
+    font-family: "Noto Sans TC", "PingFang TC", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text); line-height: 1.65; font-size: 16px;
+  }
+
+  /* Progress bar */
+  .progress {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 6px; background: var(--border); z-index: 10;
+  }
+  .progress .bar {
+    height: 100%; background: var(--accent);
+    width: 0%; transition: width 0.3s ease;
+  }
+  .progress-text {
+    position: fixed; top: 16px; right: 20px;
+    font-size: 12px; color: var(--muted); font-weight: 500;
+    z-index: 10;
+  }
+
+  /* Page container */
+  .stage {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 60px 24px 40px;
+  }
+  .step {
+    max-width: 560px; width: 100%;
+    display: none; animation: fadeIn 0.3s ease;
+  }
+  .step.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .qnum {
+    display: inline-block;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+    color: var(--accent); margin-bottom: 12px; text-transform: uppercase;
+  }
+  .qtitle {
+    font-size: 22px; font-weight: 700; line-height: 1.5;
+    margin: 0 0 8px;
+  }
+  .qhint {
+    font-size: 14px; color: var(--muted); margin: 0 0 24px;
+  }
+
+  /* Options */
+  .opts { margin-bottom: 32px; }
+  .opt {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    margin-bottom: 8px; cursor: pointer;
+    transition: all 0.15s ease;
+    background: var(--card); font-size: 15px;
+  }
+  .opt:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .opt input { accent-color: var(--accent); width: 18px; height: 18px; }
+  .opt.skip-target { border-style: dashed; }
+  .opt-disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+  .opt-disabled:hover { border-color: var(--border); background: var(--card); }
+  .opt .skiphint {
+    color: var(--skip-text); background: var(--skip-bg);
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; margin-left: auto; white-space: nowrap;
+  }
+
+  /* Stacked option: radio on top, text input grows below inside same border */
+  .opt-stack {
+    display: block; padding: 0;
+    overflow: hidden;
+  }
+  .opt-stack .opt-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+  }
+  .opt-stack .opt-inline-input {
+    display: none;
+    width: calc(100% - 36px);
+    margin: 0 18px 14px 46px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: inherit; font-size: 14px;
+    background: #fafbfc; color: var(--text);
+  }
+  .opt-stack .opt-inline-input.show { display: block; animation: slideDown 0.2s ease; }
+  .opt-stack .opt-inline-input:focus { outline: none; border-color: var(--accent); background: white; }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Text input */
+  .textinput, .textarea {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; font-family: inherit; font-size: 15px;
+    background: var(--card); color: var(--text);
+  }
+  .textarea { min-height: 100px; resize: vertical; }
+  .textinput:focus, .textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+
+  /* Rating stars */
+  .rating { display: flex; gap: 8px; margin-bottom: 28px; }
+  .rating label {
+    flex: 1; cursor: pointer; user-select: none;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 18px 8px; text-align: center;
+    background: var(--card);
+    transition: all 0.15s ease;
+  }
+  .rating label:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .rating input { display: none; }
+  .rating label .num { font-size: 20px; font-weight: 700; color: var(--muted); display: block; }
+  .rating label .desc { font-size: 11px; color: var(--muted); margin-top: 2px; display: block; min-height: 14px; }
+  .rating input:checked + .vis .num { color: var(--accent); }
+  .rating input:checked + .vis { color: var(--accent); }
+  .rating-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; color: var(--muted); margin-top: -16px; margin-bottom: 28px;
+  }
+
+  /* Buttons */
+  .actions {
+    display: flex; gap: 12px; justify-content: space-between;
+    align-items: center;
+  }
+  .btn {
+    padding: 12px 24px; border-radius: 8px; font-size: 15px; font-weight: 600;
+    cursor: pointer; border: none; font-family: inherit;
+    transition: all 0.15s ease;
+  }
+  .btn-primary {
+    background: var(--accent); color: white;
+  }
+  .btn-primary:hover { background: #1e3a8a; }
+  .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; }
+  .btn-secondary {
+    background: transparent; color: var(--muted);
+    padding: 12px 8px;
+  }
+  .btn-secondary:hover { color: var(--accent); }
+  .btn-secondary.hidden { visibility: hidden; }
+
+  /* Intro / outro */
+  .intro h1 { font-size: 28px; margin: 0 0 12px; }
+  .intro .meta {
+    color: var(--muted); font-size: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .intro ul { padding-left: 20px; color: var(--muted); font-size: 14px; margin: 12px 0 28px; }
+  .intro ul li { margin-bottom: 4px; }
+
+  .outro { text-align: center; padding: 20px 0; }
+  .outro h1 { font-size: 28px; margin: 0 0 12px; }
+  .outro p { color: var(--muted); font-size: 15px; }
+
+  /* Interview opt-in */
+  .interview-block {
+    margin-top: 24px; padding: 18px;
+    background: #fff7ed; border: 1px solid #fdba74; border-radius: 10px;
+  }
+  .interview-block label {
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; font-size: 14px; color: #9a3412;
+  }
+  .interview-block input[type="checkbox"] { accent-color: var(--accent); width: 18px; height: 18px; }
+  .interview-block .contact { margin-top: 12px; display: none; }
+  .interview-block .contact.show { display: block; }
+
+  /* Topbar with toggle */
+  .topbar-extra {
+    position: fixed; top: 16px; left: 20px;
+    font-size: 12px; color: var(--muted); z-index: 10;
+    background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="topbar-extra">v4 預覽(本地)</div>
+<div class="progress-text" id="progressText">—</div>
+
+<div class="stage">
+
+  <!-- Intro -->
+  <div class="step active" data-id="intro">
+    <div class="intro">
+      <h1>STARLUX 星宇航空 App 使用經驗調查</h1>
+      <div class="meta">預估填答時間 約 2 分鐘</div>
+      <p>嗨!這份問卷想了解你在使用 STARLUX App 時,哪個環節最讓你卡關。</p>
+      <ul>
+        <li>問卷匿名,所有回應只用於本次研究</li>
+        <li>沒有對錯答案,寫真實感覺就好</li>
+        <li>中途離開資料不會儲存</li>
+      </ul>
+      <div class="actions">
+        <button class="btn btn-secondary hidden"></button>
+        <button class="btn btn-primary" onclick="goNext()">開始填寫 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="step" data-id="q1">
+    <span class="qnum">Q1 / 篩選</span>
+    <h2 class="qtitle">你有用過 STARLUX App 嗎?</h2>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q1" value="yes"><span>有用過</span></label>
+      <label class="opt skip-target"><input type="radio" name="q1" value="no"><span>沒用過</span><span class="skiphint">→ 結尾</span></label>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="step" data-id="q2">
+    <span class="qnum">Q2 / 使用情境</span>
+    <h2 class="qtitle">你最近一次用 STARLUX App,主要是為了什麼?</h2>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q2" value="biz-self"><span>商務出差 — 自己訂</span></label>
+      <label class="opt"><input type="radio" name="q2" value="biz-comp"><span>商務出差 — 公司 / 旅行社代訂</span></label>
+      <label class="opt"><input type="radio" name="q2" value="leisure"><span>個人旅遊 / 探親</span></label>
+      <div class="opt opt-stack" id="q2OptOther">
+        <label class="opt-row">
+          <input type="radio" name="q2" value="other">
+          <span>其他</span>
+        </label>
+        <input class="opt-inline-input" id="q2OtherInput" type="text" placeholder="請補充(必填)">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q3 流程篩選 -->
+  <div class="step" data-id="q3">
+    <span class="qnum">Q3 / 使用過的流程</span>
+    <h2 class="qtitle">你實際用過 STARLUX App 完成以下哪些流程?</h2>
+    <p class="qhint">可複選</p>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" name="q3" value="book"><span>訂票</span></label>
+      <label class="opt"><input type="checkbox" name="q3" value="change"><span>改票 / 退票</span></label>
+      <label class="opt"><input type="checkbox" name="q3" value="checkin"><span>線上報到</span></label>
+      <label class="opt"><input type="checkbox" name="q3" value="mileage"><span>累積 / 使用里程</span></label>
+      <label class="opt skip-target"><input type="checkbox" name="q3" value="none"><span>都沒實際做過</span><span class="skiphint">→ 跳 Q4–7</span></label>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q4 訂票流程 (condition: q3 includes book) -->
+  <div class="step" data-id="q4" data-condition="book">
+    <span class="qnum">Q4 / 訂票流程</span>
+    <h2 class="qtitle">訂票流程中,哪些步驟覺得不順?</h2>
+    <p class="qhint">可複選 — 勾選後可選填當時狀況</p>
+    <div class="opts" data-step-group="q4">
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q4" value="search"><span>選地點 / 時間</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q4" value="class"><span>選艙等</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q4" value="info"><span>填個人資料</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q4" value="seat"><span>選位</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q4" value="bag"><span>加購行李</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q4" value="meal"><span>加購餐點</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q4" value="pay"><span>付款</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack" data-other="1">
+        <label class="opt-row"><input type="checkbox" name="q4" value="other"><span>其他</span></label>
+        <input class="opt-inline-input" type="text" placeholder="請描述其他你遇到問題的步驟(必填)" data-required="1">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q5 改票 -->
+  <div class="step" data-id="q5" data-condition="change">
+    <span class="qnum">Q5 / 改票流程</span>
+    <h2 class="qtitle">改票 / 退票流程中,哪些步驟覺得不順?</h2>
+    <p class="qhint">可複選 — 勾選後可選填當時狀況</p>
+    <div class="opts" data-step-group="q5">
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q5" value="entry"><span>找到改票入口</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q5" value="modify"><span>修改日期 / 航班</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q5" value="diff"><span>補差價計算</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q5" value="pay"><span>確認 / 付款</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack" data-other="1">
+        <label class="opt-row"><input type="checkbox" name="q5" value="other"><span>其他</span></label>
+        <input class="opt-inline-input" type="text" placeholder="請描述其他你遇到問題的步驟(必填)" data-required="1">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q6 報到 -->
+  <div class="step" data-id="q6" data-condition="checkin">
+    <span class="qnum">Q6 / 報到流程</span>
+    <h2 class="qtitle">線上報到流程中,哪些步驟覺得不順?</h2>
+    <p class="qhint">可複選 — 勾選後可選填當時狀況</p>
+    <div class="opts" data-step-group="q6">
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q6" value="entry"><span>找到報到入口</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q6" value="seat"><span>選位 / 換位</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q6" value="bag"><span>加購行李</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q6" value="pass"><span>下載登機證 / 加入 Wallet</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack" data-other="1">
+        <label class="opt-row"><input type="checkbox" name="q6" value="other"><span>其他</span></label>
+        <input class="opt-inline-input" type="text" placeholder="請描述其他你遇到問題的步驟(必填)" data-required="1">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q7 里程 -->
+  <div class="step" data-id="q7" data-condition="mileage">
+    <span class="qnum">Q7 / 里程流程</span>
+    <h2 class="qtitle">累積 / 使用里程流程中,哪些步驟覺得不順?</h2>
+    <p class="qhint">可複選 — 勾選後可選填當時狀況</p>
+    <div class="opts" data-step-group="q7">
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q7" value="query"><span>累積里程查詢</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q7" value="redeem"><span>折抵機票</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q7" value="reward"><span>兌換獎勵</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack">
+        <label class="opt-row"><input type="checkbox" name="q7" value="account"><span>帳戶資訊顯示</span></label>
+        <input class="opt-inline-input" type="text" placeholder="(選填)簡述當時狀況">
+      </div>
+      <div class="opt opt-stack" data-other="1">
+        <label class="opt-row"><input type="checkbox" name="q7" value="other"><span>其他</span></label>
+        <input class="opt-inline-input" type="text" placeholder="請描述其他你遇到問題的步驟(必填)" data-required="1">
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q8 旅程故事(從 v3 移植) -->
+  <div class="step" data-id="q8">
+    <span class="qnum">Q8 / 旅程故事</span>
+    <h2 class="qtitle">請描述你最近一次用 App 的體驗</h2>
+    <p class="qhint">從訂票到落地,遇到了哪些不順、卡住的地方?特別寫出最卡 / 最難用的環節(可空白)</p>
+    <textarea class="textarea" style="min-height: 140px; margin-bottom: 28px;" placeholder="可以隨意寫。例如:訂票時付款卡住、報到頁面一直轉圈..."></textarea>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q9 系統訊息明確度 -->
+  <div class="step" data-id="q9">
+    <span class="qnum">Q9 / 系統訊息</span>
+    <h2 class="qtitle">當你在 App 卡關時,App 有沒有給你明確的訊息告訴你發生什麼事?</h2>
+    <p class="qhint">如果沒卡過,選 3 (中間)</p>
+    <div class="rating">
+      <label><input type="radio" name="q9" value="1"><div class="vis"><span class="num">1</span><span class="desc"></span></div></label>
+      <label><input type="radio" name="q9" value="2"><div class="vis"><span class="num">2</span><span class="desc"></span></div></label>
+      <label><input type="radio" name="q9" value="3"><div class="vis"><span class="num">3</span><span class="desc"></span></div></label>
+      <label><input type="radio" name="q9" value="4"><div class="vis"><span class="num">4</span><span class="desc"></span></div></label>
+      <label><input type="radio" name="q9" value="5"><div class="vis"><span class="num">5</span><span class="desc"></span></div></label>
+    </div>
+    <div class="rating-row"><span>1 — 完全沒提示</span><span>5 — 提示很明確</span></div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q10 整體評分 -->
+  <div class="step" data-id="q10">
+    <span class="qnum">Q10 / 整體評分</span>
+    <h2 class="qtitle">整體來說,你給 STARLUX App 使用體驗的評分?</h2>
+    <div class="rating">
+      <label><input type="radio" name="q10" value="1"><div class="vis"><span class="num">1</span><span class="desc"></span></div></label>
+      <label><input type="radio" name="q10" value="2"><div class="vis"><span class="num">2</span><span class="desc"></span></div></label>
+      <label><input type="radio" name="q10" value="3"><div class="vis"><span class="num">3</span><span class="desc"></span></div></label>
+      <label><input type="radio" name="q10" value="4"><div class="vis"><span class="num">4</span><span class="desc"></span></div></label>
+      <label><input type="radio" name="q10" value="5"><div class="vis"><span class="num">5</span><span class="desc"></span></div></label>
+    </div>
+    <div class="rating-row"><span>1 — 很糟</span><span>5 — 很好</span></div>
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Q11 開放回饋 + 訪談 -->
+  <div class="step" data-id="q11">
+    <span class="qnum">Q11 / 開放回饋</span>
+    <h2 class="qtitle">還有想跟我們分享的嗎?</h2>
+    <p class="qhint">可空白 · 例如最該改進的地方、印象深刻的功能、其他想法</p>
+    <textarea class="textarea" style="margin-bottom: 16px;" placeholder="自由發揮"></textarea>
+
+    <div class="interview-block">
+      <label>
+        <input type="checkbox" id="wantInterview" onchange="toggleContact()">
+        <span>我願意接受 15 分鐘訪談,深入聊聊使用經驗</span>
+      </label>
+      <div class="contact" id="contactBlock">
+        <input class="textinput" placeholder="Email / IG / Line ID" style="margin-top:0;">
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:28px;">
+      <button class="btn btn-secondary" onclick="goBack()">← 上一題</button>
+      <button class="btn btn-primary" onclick="goNext()">送出 ✓</button>
+    </div>
+  </div>
+
+  <!-- End 1: completed -->
+  <div class="step" data-id="end-complete">
+    <div class="outro">
+      <h1>🙏 謝謝你完成問卷!</h1>
+      <p>你的回答會被用來做 STARLUX App UX 優化研究。</p>
+      <p>如果身邊還有其他星宇 App 使用者,歡迎幫忙轉發。</p>
+    </div>
+  </div>
+
+  <!-- End 2: skip (no app) -->
+  <div class="step" data-id="end-skip">
+    <div class="outro">
+      <h1>謝謝你的時間 🙏</h1>
+      <p>這次研究聚焦在 App 使用體驗,所以這次先不收集你的回覆。</p>
+      <p>歡迎將問卷轉給有用過 App 的朋友。</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ---- Survey state machine ----
+  const FLOW_BASE = ['intro', 'q1', 'q2', 'q3'];
+  const FLOW_CONDITIONAL = ['q4', 'q5', 'q6', 'q7']; // shown based on q3
+  // q8 旅程故事:Q3 沒勾「都沒實際做過」才出現
+  const FLOW_TAIL = ['q9', 'q10', 'q11', 'end-complete'];
+
+  let history = ['intro'];
+
+  function getStep(id) {
+    return document.querySelector(`.step[data-id="${id}"]`);
+  }
+  function current() {
+    return history[history.length - 1];
+  }
+  function show(id) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    getStep(id).classList.add('active');
+    updateProgress();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  function getQ3Selections() {
+    return Array.from(document.querySelectorAll('input[name="q3"]:checked')).map(i => i.value);
+  }
+
+  function activeFlow() {
+    // Compute the full active flow based on current Q3 state
+    const q3 = getQ3Selections();
+    if (q3.includes('none')) {
+      // 沒實際做過任何流程 → 跳過 Q4-Q7 流程細節 + Q8 旅程故事
+      return [...FLOW_BASE, ...FLOW_TAIL];
+    }
+    const conditionalShown = FLOW_CONDITIONAL.filter(id => {
+      const cond = getStep(id).getAttribute('data-condition');
+      return q3.includes(cond);
+    });
+    return [...FLOW_BASE, ...conditionalShown, 'q8', ...FLOW_TAIL];
+  }
+
+  function updateProgress() {
+    const flow = activeFlow();
+    const idx = flow.indexOf(current());
+    if (idx === -1) {
+      document.getElementById('bar').style.width = '100%';
+      document.getElementById('progressText').textContent = '完成';
+      return;
+    }
+    // intro = 0, end = total (last shown step before end-complete)
+    const visibleCount = flow.length - 1; // excluding intro? we count from intro as 0
+    const pct = Math.round((idx / (flow.length - 1)) * 100);
+    document.getElementById('bar').style.width = pct + '%';
+    if (current() === 'intro') {
+      document.getElementById('progressText').textContent = '開始';
+    } else if (current().startsWith('end')) {
+      document.getElementById('progressText').textContent = '完成';
+    } else {
+      const stepNum = idx; // intro is 0, so q1 is 1
+      const totalNum = flow.length - 2; // exclude intro and end
+      document.getElementById('progressText').textContent = `第 ${stepNum} / ${totalNum} 題`;
+    }
+  }
+
+  function goNext() {
+    const cur = current();
+    // Branching logic
+    if (cur === 'q1') {
+      const ans = document.querySelector('input[name="q1"]:checked');
+      if (!ans) { alert('請選一項'); return; }
+      if (ans.value === 'no') {
+        history.push('end-skip'); show('end-skip'); return;
+      }
+    }
+    if (cur === 'q2') {
+      const ans = document.querySelector('input[name="q2"]:checked');
+      if (ans && ans.value === 'other') {
+        const otherText = document.getElementById('q2OtherInput').value.trim();
+        if (!otherText) {
+          alert('請補充「其他」的內容');
+          document.getElementById('q2OtherInput').focus();
+          return;
+        }
+      }
+    }
+    if (cur === 'q3') {
+      const anyChecked = document.querySelectorAll('input[name="q3"]:checked').length;
+      if (anyChecked === 0) {
+        alert('請至少選一項');
+        return;
+      }
+    }
+    if (['q4', 'q5', 'q6', 'q7'].includes(cur)) {
+      const anyChecked = document.querySelectorAll(`input[name="${cur}"]:checked`).length;
+      if (anyChecked === 0) {
+        alert('請至少選一項');
+        return;
+      }
+    }
+    // Generic: 任何 step 中勾了「其他」就必須填內容
+    const otherCheckbox = getStep(cur)?.querySelector('.opt-stack[data-other="1"] input[type="checkbox"]:checked');
+    if (otherCheckbox) {
+      const otherInput = otherCheckbox.closest('.opt-stack').querySelector('input[data-required="1"]');
+      if (otherInput && !otherInput.value.trim()) {
+        alert('請補充「其他」的內容');
+        otherInput.focus();
+        return;
+      }
+    }
+    const flow = activeFlow();
+    const idx = flow.indexOf(cur);
+    if (idx === -1 || idx === flow.length - 1) return;
+    const nextId = flow[idx + 1];
+    history.push(nextId);
+    show(nextId);
+  }
+
+  function goBack() {
+    if (history.length <= 1) return;
+    history.pop();
+    show(current());
+  }
+
+  function toggleContact() {
+    const want = document.getElementById('wantInterview').checked;
+    document.getElementById('contactBlock').classList.toggle('show', want);
+  }
+
+  // Q2: show "其他" inline textinput only when 其他 is selected
+  document.querySelectorAll('input[name="q2"]').forEach(r => {
+    r.addEventListener('change', (e) => {
+      const input = document.getElementById('q2OtherInput');
+      if (e.target.value === 'other') {
+        input.classList.add('show');
+        setTimeout(() => input.focus(), 200);
+      } else {
+        input.classList.remove('show');
+        input.value = '';
+      }
+    });
+  });
+
+  // Generic: 對 .opt-stack 內的 checkbox,勾選時顯示 textinput,取消時收回 + 清空
+  document.querySelectorAll('.opt-stack input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', (e) => {
+      const input = cb.closest('.opt-stack').querySelector('.opt-inline-input');
+      if (!input) return;
+      if (e.target.checked) {
+        input.classList.add('show');
+      } else {
+        input.classList.remove('show');
+        input.value = '';
+      }
+    });
+  });
+
+  // Q3: mutual exclusion — 勾「都沒實際做過」disable 上面 4 個,反之亦然
+  document.querySelectorAll('input[name="q3"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const noneBox = document.querySelector('input[name="q3"][value="none"]');
+      const others = document.querySelectorAll('input[name="q3"]:not([value="none"])');
+
+      if (cb.value === 'none') {
+        if (cb.checked) {
+          // 勾「都沒實際做過」→ disable 上面 4 個
+          others.forEach(o => {
+            o.checked = false;
+            o.disabled = true;
+            o.closest('.opt').classList.add('opt-disabled');
+          });
+        } else {
+          // 取消「都沒實際做過」→ enable 上面 4 個
+          others.forEach(o => {
+            o.disabled = false;
+            o.closest('.opt').classList.remove('opt-disabled');
+          });
+        }
+      } else {
+        // 勾或取消上面 4 個任一 → 判斷要不要 disable「都沒實際做過」
+        const anyTopChecked = Array.from(others).some(o => o.checked);
+        if (anyTopChecked) {
+          noneBox.checked = false;
+          noneBox.disabled = true;
+          noneBox.closest('.opt').classList.add('opt-disabled');
+        } else {
+          noneBox.disabled = false;
+          noneBox.closest('.opt').classList.remove('opt-disabled');
+        }
+      }
+    });
+  });
+
+  // Initial
+  updateProgress();
+</script>
+
+</body>
+</html>
